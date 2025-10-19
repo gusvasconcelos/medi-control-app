@@ -1,13 +1,24 @@
 import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, TouchableOpacity, View, Text, ActivityIndicator } from 'react-native';
 
 import { HelloWave } from '@/components/hello-wave';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Link } from 'expo-router';
+import { useAuth } from '@/src/hooks/useAuth';
 
 export default function HomeScreen() {
+  const { user, signOut, isLoading } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -18,9 +29,38 @@ export default function HomeScreen() {
         />
       }>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
+        <ThemedText type="title">Welcome, {user?.name}!</ThemedText>
         <HelloWave />
       </ThemedView>
+
+      <ThemedView style={styles.stepContainer}>
+        <ThemedText type="subtitle">Your Profile</ThemedText>
+        <ThemedText>
+          <ThemedText type="defaultSemiBold">Email: </ThemedText>
+          {user?.email}
+        </ThemedText>
+        <ThemedText>
+          <ThemedText type="defaultSemiBold">User ID: </ThemedText>
+          {user?.id}
+        </ThemedText>
+        <ThemedText>
+          <ThemedText type="defaultSemiBold">Account Created: </ThemedText>
+          {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
+        </ThemedText>
+
+        <TouchableOpacity
+          style={[styles.logoutButton, isLoading && styles.logoutButtonDisabled]}
+          onPress={handleLogout}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.logoutButtonText}>Sign Out</Text>
+          )}
+        </TouchableOpacity>
+      </ThemedView>
+
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 1: Try it</ThemedText>
         <ThemedText>
@@ -94,5 +134,21 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     position: 'absolute',
+  },
+  logoutButton: {
+    backgroundColor: '#ff3b30',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    marginTop: 16,
+    alignItems: 'center',
+  },
+  logoutButtonDisabled: {
+    opacity: 0.6,
+  },
+  logoutButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
