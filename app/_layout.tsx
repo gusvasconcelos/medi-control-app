@@ -4,7 +4,7 @@ import { ToastProvider } from '@/src/contexts/ToastContext';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import 'react-native-reanimated';
 import '../global.css';
@@ -17,18 +17,31 @@ function RootLayoutNav() {
   const { isAuthenticated, isInitializing } = useContext(AuthContext)!;
   const segments = useSegments();
   const router = useRouter();
+  const isNavigating = useRef(false);
 
   useEffect(() => {
-    if (isInitializing) return;
+    if (isInitializing || isNavigating.current) return;
 
     const inAuthGroup = segments[0] === '(tabs)';
 
+    // Apenas navega se realmente precisar mudar de grupo
     if (!isAuthenticated && inAuthGroup) {
+      // Usuário não autenticado tentando acessar área protegida
+      isNavigating.current = true;
       router.replace('/(auth)/auth');
+      setTimeout(() => {
+        isNavigating.current = false;
+      }, 500);
     } else if (isAuthenticated && !inAuthGroup) {
+      // Usuário autenticado na área de auth
+      isNavigating.current = true;
       router.replace('/(tabs)');
+      setTimeout(() => {
+        isNavigating.current = false;
+      }, 500);
     }
-  }, [isAuthenticated, isInitializing, segments, router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, isInitializing, segments[0]]);
 
   if (isInitializing) {
     return (
