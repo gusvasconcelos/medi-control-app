@@ -39,7 +39,7 @@ export const Colors = {
 
   muted: {
     DEFAULT: '#F3F5F7',
-    foreground: '#52667A',
+    foreground: '#3E4C59',
   },
 
   border: '#D9DFE5',
@@ -50,7 +50,7 @@ export const Colors = {
     foreground: '#F1F3F5',
     muted: {
       DEFAULT: '#232B3D',
-      foreground: '#939DAE',
+      foreground: '#B4BCC9',
     },
     border: '#303847',
     card: '#1E2433',
@@ -91,7 +91,7 @@ export const ColorsHSL = {
   foreground: 'hsl(215, 25%, 16%)',
   muted: {
     DEFAULT: 'hsl(210, 20%, 96%)',
-    foreground: 'hsl(215, 20%, 40%)',
+    foreground: 'hsl(215, 20%, 30%)',
   },
   border: 'hsl(215, 20%, 88%)',
 } as const;

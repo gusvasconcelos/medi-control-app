@@ -39,7 +39,7 @@ module.exports = {
         background: 'hsl(210, 30%, 98%)', // #F8FAFB
         foreground: 'hsl(215, 25%, 16%)', // #1F2937
         muted: {
-          DEFAULT: 'hsl(210, 20%, 96%)',  // #F3F5F7
+          DEFAULT: 'hsl(210, 20%, 70%)',  // #F3F5F7
           foreground: 'hsl(215, 20%, 40%)', // #52667A
         },
         border: 'hsl(215, 20%, 88%)',     // #D9DFE5
@@ -49,7 +49,7 @@ module.exports = {
           background: 'hsl(215, 28%, 12%)',    // #171D2A - Azul escuro médico
           foreground: 'hsl(210, 20%, 95%)',    // #F1F3F5 - Texto claro
           muted: {
-            DEFAULT: 'hsl(215, 25%, 18%)',     // #232B3D - Cinza azulado
+            DEFAULT: 'hsl(215, 25%, 30%)',     // #232B3D - Cinza azulado
             foreground: 'hsl(215, 15%, 65%)',  // #939DAE - Texto secundário
           },
           border: 'hsl(215, 25%, 25%)',        // #303847 - Bordas sutis

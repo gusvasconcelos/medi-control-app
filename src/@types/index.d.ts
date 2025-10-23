@@ -6,6 +6,7 @@ export interface ApiError {
   details?: Record<string, string[]>;
 }
 
-export * from './auth/auth';
-export * from './user/user';
+export * from './auth';
+export * from './medication';
+export * from './user';
 
