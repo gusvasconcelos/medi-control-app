@@ -26,7 +26,7 @@ export function DayView({ medications, selectedDate, onMedicationPress }: DayVie
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const formattedDate = format(selectedDate, "EEEE, dd 'de' MMMM 'de' yyyy", {
+  const formattedDate = format(selectedDate, "dd 'de' MMMM 'de' yyyy", {
     locale: ptBR,
   });
 
@@ -137,7 +137,7 @@ export function DayView({ medications, selectedDate, onMedicationPress }: DayVie
   return (
     <ScrollView className="flex-1 bg-background dark:bg-dark-background">
       <View className="p-4">
-        <Text className="text-xl font-semibold text-foreground dark:text-dark-foreground mb-6">
+        <Text className="text-xl font-semibold text-foreground dark:text-dark-foreground mb-6 text-center capitalize">
           {formattedDate}
         </Text>
 
