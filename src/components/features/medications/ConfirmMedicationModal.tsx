@@ -76,7 +76,7 @@ export function ConfirmMedicationModal({
                 <Text className="text-2xl font-bold text-foreground dark:text-dark-foreground">
                   Confirmar Medicamento Tomado
                 </Text>
-                <Text className="text-sm text-muted dark:text-dark-muted mt-1">
+                <Text className="text-sm text-foreground dark:text-dark-foreground mt-1">
                   Registre os detalhes sobre {medicationName}
                 </Text>
               </View>
@@ -91,7 +91,7 @@ export function ConfirmMedicationModal({
                 {medicationName}
               </Text>
               {dosage && (
-                <Text className="text-xs text-muted dark:text-dark-muted">
+                <Text className="text-xs text-foreground dark:text-dark-foreground">
                   {dosage}
                 </Text>
               )}
@@ -119,7 +119,7 @@ export function ConfirmMedicationModal({
                 onChange={setTakenAtTime}
                 containerClassName=""
               />
-              <Text className="text-xs text-muted dark:text-dark-muted mt-2">
+              <Text className="text-xs text-foreground dark:text-dark-foreground mt-2">
                 Deixe em branco para usar o horário atual
               </Text>
             </View>
@@ -143,7 +143,7 @@ export function ConfirmMedicationModal({
                 "
                 editable={!isLoading}
               />
-              <Text className="text-xs text-muted dark:text-dark-muted mt-1">
+              <Text className="text-xs text-foreground dark:text-dark-foreground mt-1">
                 {notes.length}/1000
               </Text>
             </View>

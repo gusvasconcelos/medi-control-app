@@ -39,21 +39,21 @@ module.exports = {
         background: 'hsl(210, 30%, 98%)', // #F8FAFB
         foreground: 'hsl(215, 25%, 16%)', // #1F2937
         muted: {
-          DEFAULT: 'hsl(210, 20%, 70%)',  // #F3F5F7
+          DEFAULT: 'hsl(210, 20%, 90%)',  // #F3F5F7
           foreground: 'hsl(215, 20%, 40%)', // #52667A
         },
         border: 'hsl(215, 20%, 88%)',     // #D9DFE5
 
         // Dark Mode Colors
         dark: {
-          background: 'hsl(215, 28%, 12%)',    // #171D2A - Azul escuro médico
-          foreground: 'hsl(210, 20%, 95%)',    // #F1F3F5 - Texto claro
+          background: 'hsl(215, 28%, 12%)',    // #171D2A
+          foreground: 'hsl(210, 20%, 95%)',    // #F1F3F5
           muted: {
-            DEFAULT: 'hsl(215, 25%, 30%)',     // #232B3D - Cinza azulado
-            foreground: 'hsl(215, 15%, 65%)',  // #939DAE - Texto secundário
+            DEFAULT: 'hsl(215, 25%, 15%)',     // #232B3D
+            foreground: 'hsl(215, 15%, 65%)',  // #939DAE
           },
-          border: 'hsl(215, 25%, 25%)',        // #303847 - Bordas sutis
-          card: 'hsl(215, 27%, 15%)',          // #1E2433 - Cards/containers
+          border: 'hsl(215, 25%, 25%)',        // #303847
+          card: 'hsl(215, 27%, 15%)',          // #1E2433
         },
       },
     },

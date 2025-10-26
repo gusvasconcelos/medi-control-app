@@ -61,7 +61,7 @@ export function MonthView({ medications, selectedDate, onDayPress }: MonthViewPr
         });
 
         const indicatorsMap = new Map<string, Medication.DayIndicator>();
-        data.forEach((indicator) => {
+        data.forEach((indicator: Medication.DayIndicator) => {
           indicatorsMap.set(indicator.date, indicator);
         });
 
@@ -130,7 +130,7 @@ export function MonthView({ medications, selectedDate, onDayPress }: MonthViewPr
         <View className="flex-row mb-2">
           {WEEK_DAYS.map((day) => (
             <View key={day} className="flex-1 items-center">
-              <Text className="text-xs font-medium text-muted dark:text-dark-muted">
+              <Text className="text-xs font-medium text-foreground dark:text-dark-foreground">
                 {day}
               </Text>
             </View>
@@ -170,7 +170,7 @@ export function MonthView({ medications, selectedDate, onDayPress }: MonthViewPr
                               ? 'text-health'
                               : dayStats.isCurrentMonth
                               ? 'text-foreground dark:text-dark-foreground'
-                              : 'text-muted dark:text-dark-muted'
+                              : 'text-gray-400 dark:text-gray-600'
                           }`}
                         >
                           {dayNumber}

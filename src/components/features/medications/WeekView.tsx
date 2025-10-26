@@ -53,7 +53,7 @@ export function WeekView({ medications, selectedDate, onDayPress }: WeekViewProp
         });
 
         const indicatorsMap = new Map<string, Medication.DayIndicator>();
-        data.forEach((indicator) => {
+        data.forEach((indicator: Medication.DayIndicator) => {
           indicatorsMap.set(indicator.date, indicator);
         });
 
@@ -144,7 +144,7 @@ export function WeekView({ medications, selectedDate, onDayPress }: WeekViewProp
                           ? 'text-primary'
                           : isTodayDate
                           ? 'text-health'
-                          : 'text-muted dark:text-dark-muted'
+                          : 'text-foreground dark:text-dark-foreground'
                       }`}
                     >
                       {dayName}
@@ -179,7 +179,7 @@ export function WeekView({ medications, selectedDate, onDayPress }: WeekViewProp
                       className={`text-xs ${
                         isSelected
                           ? 'text-primary'
-                          : 'text-muted dark:text-dark-muted'
+                          : 'text-gray-600 dark:text-gray-400'
                       }`}
                     >
                       medicamentos

@@ -10,7 +10,7 @@ import 'react-native-reanimated';
 import '../global.css';
 
 export const unstable_settings = {
-  initialRouteName: 'auth',
+  initialRouteName: '(tabs)',
 };
 
 function RootLayoutNav() {
@@ -24,23 +24,19 @@ function RootLayoutNav() {
 
     const inAuthGroup = segments[0] === '(tabs)';
 
-    // Apenas navega se realmente precisar mudar de grupo
     if (!isAuthenticated && inAuthGroup) {
-      // Usuário não autenticado tentando acessar área protegida
       isNavigating.current = true;
       router.replace('/(auth)/auth');
       setTimeout(() => {
         isNavigating.current = false;
       }, 500);
     } else if (isAuthenticated && !inAuthGroup) {
-      // Usuário autenticado na área de auth
       isNavigating.current = true;
       router.replace('/(tabs)');
       setTimeout(() => {
         isNavigating.current = false;
       }, 500);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, isInitializing, segments[0]]);
 
   if (isInitializing) {
@@ -55,7 +51,6 @@ function RootLayoutNav() {
     <Stack>
       <Stack.Screen name="(auth)" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
     </Stack>
   );
 }

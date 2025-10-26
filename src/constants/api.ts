@@ -10,13 +10,15 @@ export const API_ROUTES = {
     refresh: '/v1/auth/refresh',
     me: '/v1/auth/me',
   },
+  medications: {
+    search: '/v1/medications/search',
+  },
   userMedications: {
     list: '/v1/user-medications',
     show: (id: number) => `/v1/user-medications/${id}`,
     create: '/v1/user-medications',
     update: (id: number) => `/v1/user-medications/${id}`,
     delete: (id: number) => `/v1/user-medications/${id}`,
-    searchMedications: '/v1/user-medications/medications/search',
     indicators: '/v1/user-medications/indicators',
     logTaken: (id: number) => `/v1/user-medications/${id}/log-taken`,
   },

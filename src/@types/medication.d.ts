@@ -1,7 +1,4 @@
 export namespace Medication {
-  /**
-   * Forma farmacêutica do medicamento
-   */
   export type MedicationForm =
     | 'tablet'
     | 'capsule'
@@ -14,9 +11,6 @@ export namespace Medication {
     | 'patch'
     | 'other';
 
-  /**
-   * Via de administração do medicamento
-   */
   export type ViaAdministration =
     | 'oral'
     | 'topical'
@@ -26,21 +20,16 @@ export namespace Medication {
     | 'rectal'
     | 'other';
 
-  /**
-   * Status da tomada do medicamento
-   */
   export type MedicationLogStatus = 'pending' | 'taken' | 'missed' | 'skipped';
 
-  /**
-   * Modelo de medicamento (convertido para camelCase pelo interceptor)
-   */
-  export interface MedicationModel {
+  export interface Medication {
     id: number;
     name: string;
     activePrinciple: string | null;
     manufacturer: string | null;
     category: string | null;
     therapeuticClass: string | null;
+    registrationNumber: string;
     strength: string | null;
     form: MedicationForm | null;
     description: string | null;
@@ -50,9 +39,6 @@ export namespace Medication {
     updatedAt: string;
   }
 
-  /**
-   * Log de tomada de medicamento (convertido para camelCase pelo interceptor)
-   */
   export interface MedicationLog {
     id: number;
     userMedicationId: number;
@@ -63,9 +49,6 @@ export namespace Medication {
     createdAt: string;
   }
 
-  /**
-   * Medicamento do usuário (convertido para camelCase pelo interceptor)
-   */
   export interface UserMedication {
     id: number;
     userId: number;
@@ -87,9 +70,6 @@ export namespace Medication {
     logs: MedicationLog[];
   }
 
-  /**
-   * Payload para cadastrar medicamento usando medicamento existente
-   */
   export interface StoreUserMedicationWithExisting {
     medication_id: number;
     dosage: string;
@@ -104,9 +84,6 @@ export namespace Medication {
     notes?: string | null;
   }
 
-  /**
-   * Payload para cadastrar medicamento criando novo medicamento
-   */
   export interface StoreUserMedicationWithNew {
     medication_name: string;
     medication_active_principle: string;
@@ -126,9 +103,6 @@ export namespace Medication {
     notes?: string | null;
   }
 
-  /**
-   * Payload para atualizar medicamento do usuário
-   */
   export interface UpdateUserMedication {
     dosage?: string;
     time_slots?: string[];
@@ -143,73 +117,50 @@ export namespace Medication {
     active?: boolean;
   }
 
-  /**
-   * Resposta de cadastro/atualização de medicamento
-   */
   export interface UserMedicationResponse {
     message: string;
-    data: UserMedication;
+    data: UserMedication[];
   }
 
-  /**
-   * Resposta de remoção de medicamento
-   */
   export interface DeleteUserMedicationResponse {
     message: string;
   }
 
-  /**
-   * Parâmetros para listagem de medicamentos
-   */
   export interface GetUserMedicationsParams {
     start_date?: string;
     end_date?: string;
   }
 
-  /**
-   * Parâmetros para busca de medicamentos
-   */
   export interface SearchMedicationsParams {
     search: string;
     limit?: number;
   }
 
-  /**
-   * Indicador de medicamentos por dia
-   */
+  export interface SearchMedicationsResponse {
+    data: Medication[];
+  }
+
   export interface DayIndicator {
     date: string;
     totalScheduled: number;
     totalTaken: number;
   }
 
-  /**
-   * Resposta de indicadores de medicamentos
-   */
   export interface GetMedicationIndicatorsResponse {
     data: DayIndicator[];
   }
 
-  /**
-   * Parâmetros para obter indicadores de medicamentos
-   */
   export interface GetMedicationIndicatorsParams {
     startDate: string;
     endDate: string;
   }
 
-  /**
-   * Payload para marcar medicamento como tomado
-   */
   export interface LogTakenPayload {
     time_slot: string;
     taken_at?: string;
     notes?: string;
   }
 
-  /**
-   * Resposta de log de medicamento tomado
-   */
   export interface LogTakenResponse {
     data: MedicationLog;
   }

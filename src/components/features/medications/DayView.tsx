@@ -30,7 +30,6 @@ export function DayView({ medications, selectedDate, onMedicationPress }: DayVie
     locale: ptBR,
   });
 
-  // Agrupa medicamentos por horário do dia selecionado
   const scheduledMedications = useMemo<MedicationSchedule[]>(() => {
     const schedules: MedicationSchedule[] = [];
     const selectedDateString = format(selectedDate, 'yyyy-MM-dd');
@@ -41,7 +40,6 @@ export function DayView({ medications, selectedDate, onMedicationPress }: DayVie
       }
 
       medication.timeSlots.forEach((timeSlot) => {
-        // Verifica se logs existe antes de usar find
         const log = medication.logs?.find((l) => {
           const scheduledDate = format(parseISO(l.scheduledAt), 'yyyy-MM-dd');
           const scheduledTime = format(parseISO(l.scheduledAt), 'HH:mm');
@@ -57,18 +55,15 @@ export function DayView({ medications, selectedDate, onMedicationPress }: DayVie
       });
     });
 
-    // Ordena por horário
     return schedules.sort((a, b) => {
       return a.scheduledTime.localeCompare(b.scheduledTime);
     });
   }, [medications, selectedDate]);
 
-  // Atualiza o estado local de medicamentos agendados
   useEffect(() => {
     setScheduledMeds(scheduledMedications);
   }, [scheduledMedications]);
 
-  // Calcula estatísticas
   const stats = useMemo(() => {
     const total = scheduledMeds.length;
     const taken = scheduledMeds.filter((s) => s.log?.status === 'taken').length;
@@ -142,12 +137,10 @@ export function DayView({ medications, selectedDate, onMedicationPress }: DayVie
   return (
     <ScrollView className="flex-1 bg-background dark:bg-dark-background">
       <View className="p-4">
-        {/* Data selecionada */}
         <Text className="text-xl font-semibold text-foreground dark:text-dark-foreground mb-6">
           {formattedDate}
         </Text>
 
-        {/* Lista de medicamentos */}
         {scheduledMeds.length > 0 ? (
           <>
             {scheduledMeds.map((schedule, index) => (
@@ -163,7 +156,6 @@ export function DayView({ medications, selectedDate, onMedicationPress }: DayVie
               />
             ))}
 
-            {/* Contador de medicamentos tomados */}
             <View className="mt-2 mb-6">
               <Text className="text-center text-base text-foreground dark:text-dark-foreground">
                 {stats.taken} de {stats.total} medicamentos tomados
@@ -179,7 +171,6 @@ export function DayView({ medications, selectedDate, onMedicationPress }: DayVie
         )}
       </View>
 
-      {/* Modal de Confirmação */}
       <ConfirmMedicationModal
         visible={modalVisible}
         medication={selectedMedication}

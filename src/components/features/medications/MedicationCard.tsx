@@ -102,7 +102,7 @@ export function MedicationCard({
             <Text className="text-base font-semibold text-foreground dark:text-dark-foreground">
               {medication.medication?.name || 'Medicamento sem nome'}
             </Text>
-            <Text className="text-sm text-muted dark:text-dark-muted mt-0.5">
+            <Text className="text-sm text-foreground dark:text-dark-foreground mt-0.5">
               {scheduledTime}
             </Text>
           </View>
@@ -135,7 +135,7 @@ export function MedicationCard({
       {/* Dosagem (se disponível) */}
       {medication.dosage && (
         <View className="mt-2 ml-6">
-          <Text className="text-sm text-muted dark:text-dark-muted">
+          <Text className="text-sm text-foreground dark:text-dark-foreground">
             {medication.dosage}
           </Text>
         </View>

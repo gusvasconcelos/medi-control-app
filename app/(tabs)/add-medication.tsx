@@ -1,5 +1,6 @@
 import type { Medication } from '@/src/@types';
-import { createUserMedicationWithExisting, createUserMedicationWithNew, searchMedications } from '@/src/api/services';
+import { createUserMedicationWithExisting, createUserMedicationWithNew } from '@/src/api/services';
+import { searchMedications } from '@/src/api/services/medications';
 import { DatePicker, Input, TimePicker } from '@/src/components';
 import { useAuth } from '@/src/hooks/useAuth';
 import { useDebounce } from '@/src/hooks/useDebounce';
@@ -47,13 +48,11 @@ export default function AddMedicationScreen() {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // Autocomplete de medicamentos
   const [selectedMedicationId, setSelectedMedicationId] = useState<number | null>(null);
-  const [searchResults, setSearchResults] = useState<Medication.MedicationModel[]>([]);
+  const [searchResults, setSearchResults] = useState<Medication.Medication[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-  // Dados do medicamento
   const [medicationName, setMedicationName] = useState('');
   const [activePrinciple, setActivePrinciple] = useState('');
   const [manufacturer, setManufacturer] = useState('');
@@ -61,10 +60,8 @@ export default function AddMedicationScreen() {
   const [form, setForm] = useState<Medication.MedicationForm>('tablet');
   const [category, setCategory] = useState('');
 
-  // Debounce do nome do medicamento
   const debouncedMedicationName = useDebounce(medicationName, 500);
 
-  // Dados do tratamento
   const [dosage, setDosage] = useState('');
   const [timeSlots, setTimeSlots] = useState<string[]>([]);
   const [viaAdministration, setViaAdministration] = useState<Medication.ViaAdministration>('oral');
@@ -74,13 +71,10 @@ export default function AddMedicationScreen() {
   const [lowStockThreshold, setLowStockThreshold] = useState('5');
   const [notes, setNotes] = useState('');
 
-  // Estado para o TimePicker
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Busca medicamentos quando o nome muda (com debounce)
   useEffect(() => {
     const fetchMedications = async () => {
-      // Retorna cedo se o usuário não está autenticado
       if (!user) {
         setSearchResults([]);
         setShowSuggestions(false);
@@ -92,9 +86,9 @@ export default function AddMedicationScreen() {
           setIsSearching(true);
           const results = await searchMedications({
             search: debouncedMedicationName,
-            limit: 10,
+            limit: 5,
           });
-          setSearchResults(results);
+          setSearchResults(results.data);
           setShowSuggestions(true);
         } catch (error) {
           console.error('Erro ao buscar medicamentos:', error);
@@ -111,7 +105,7 @@ export default function AddMedicationScreen() {
     fetchMedications();
   }, [debouncedMedicationName, user?.id]);
 
-  const handleSelectMedication = (medication: Medication.MedicationModel) => {
+  const handleSelectMedication = (medication: Medication.Medication) => {
     setSelectedMedicationId(medication.id);
     setMedicationName(medication.name);
     setActivePrinciple(medication.activePrinciple || '');
@@ -145,7 +139,6 @@ export default function AddMedicationScreen() {
   };
 
   const handleSubmit = async () => {
-    // Validações básicas
     if (!medicationName.trim()) {
       Alert.alert('Erro', 'Digite o nome do medicamento');
       return;
@@ -170,7 +163,6 @@ export default function AddMedicationScreen() {
       setIsLoading(true);
 
       if (selectedMedicationId) {
-        // Usa medicamento existente
         const payload: Medication.StoreUserMedicationWithExisting = {
           medication_id: selectedMedicationId,
           dosage,
@@ -186,7 +178,6 @@ export default function AddMedicationScreen() {
 
         await createUserMedicationWithExisting(payload);
       } else {
-        // Cria novo medicamento
         const payload: Medication.StoreUserMedicationWithNew = {
           medication_name: medicationName,
           medication_active_principle: activePrinciple,
@@ -226,7 +217,7 @@ export default function AddMedicationScreen() {
     >
       <ScrollView
         className="flex-1 bg-background dark:bg-dark-background"
-        contentContainerStyle={{ paddingBottom: 40 }}
+        contentContainerStyle={{ paddingBottom: 24 }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
@@ -297,7 +288,7 @@ export default function AddMedicationScreen() {
                           <Text className="text-sm font-medium text-foreground dark:text-dark-foreground mb-1">
                             {medication.name}
                           </Text>
-                          <Text className="text-xs text-muted dark:text-dark-muted">
+                          <Text className="text-xs text-foreground dark:text-dark-foreground">
                             {label}
                           </Text>
                         </Pressable>

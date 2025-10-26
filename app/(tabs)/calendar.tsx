@@ -19,11 +19,12 @@ import {
   subWeeks,
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Stack, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Plus } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Modal, Platform, Pressable, Text, useColorScheme, View } from 'react-native';
 import { Calendar } from 'react-native-calendars';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type ViewMode = 'day' | 'week' | 'month';
 
@@ -31,6 +32,7 @@ export default function CalendarScreen() {
   const router = useRouter();
   const colorScheme = useColorScheme();
   const { user } = useAuth();
+  const insets = useSafeAreaInsets();
   const [viewMode, setViewMode] = useState<ViewMode>('day');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [medications, setMedications] = useState<Medication.UserMedication[]>([]);
@@ -38,7 +40,6 @@ export default function CalendarScreen() {
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   const iconColor = colorScheme === 'dark' ? '#E5E7EB' : '#1F2937';
-  const mutedColor = colorScheme === 'dark' ? '#9CA3AF' : '#6B7280';
 
   useEffect(() => {
     loadMedications();
@@ -48,13 +49,11 @@ export default function CalendarScreen() {
     try {
       setIsLoading(true);
 
-      // Retorna cedo se o usuário não está autenticado
       if (!user) {
         setMedications([]);
         return;
       }
 
-      // Calcula as datas de início e fim baseadas no viewMode
       let startDate: Date;
       let endDate: Date;
 
@@ -78,8 +77,8 @@ export default function CalendarScreen() {
         end_date: format(endDate, 'yyyy-MM-dd'),
       };
 
-      const data = await getUserMedications(params);
-      setMedications(data);
+      const medicationsResponse = await getUserMedications(params);
+      setMedications(medicationsResponse.data);
     } catch (error) {
       console.error('Erro ao carregar medicamentos:', error);
     } finally {
@@ -87,7 +86,6 @@ export default function CalendarScreen() {
     }
   };
 
-  // Navega para a data anterior
   const goToPrevious = () => {
     switch (viewMode) {
       case 'day':
@@ -102,7 +100,6 @@ export default function CalendarScreen() {
     }
   };
 
-  // Navega para a próxima data
   const goToNext = () => {
     switch (viewMode) {
       case 'day':
@@ -117,14 +114,12 @@ export default function CalendarScreen() {
     }
   };
 
-  // Handler para mudança de data no picker (iOS)
   const handleDateChange = (day: { dateString: string }) => {
     const [year, month, dayNum] = day.dateString.split('-').map(Number);
     const newDate = new Date(year, month - 1, dayNum);
     setSelectedDate(newDate);
   };
 
-  // Handler para Android DateTimePicker
   const handleAndroidDateChange = (_event: any, date?: Date) => {
     setShowDatePicker(false);
     if (date) {
@@ -140,7 +135,6 @@ export default function CalendarScreen() {
     setShowDatePicker(false);
   };
 
-  // Renderiza o seletor de data central
   const renderDateSelector = () => {
     let label = '';
 
@@ -161,58 +155,33 @@ export default function CalendarScreen() {
     return (
       <Pressable
         onPress={() => setShowDatePicker(true)}
-        className="flex-row items-center gap-2 px-4 py-2 rounded-full border border-border dark:border-dark-border bg-white dark:bg-dark-card"
+        className="flex-row items-center gap-2 px-3 py-1.5 active:opacity-50"
       >
-        <CalendarIcon size={18} color={iconColor} />
-        <Text className="text-sm font-medium text-foreground dark:text-dark-foreground">
+        <CalendarIcon size={16} color={iconColor} />
+        <Text className="text-base font-medium text-foreground dark:text-dark-foreground">
           {label}
         </Text>
-        <ChevronRight size={16} color={mutedColor} />
       </Pressable>
     );
   };
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          headerTitle: 'Calendário',
-          headerLeft: undefined,
-          // headerRight: () => (
-          //   <View className="flex-row items-center gap-4 mr-4">
-          //     <Pressable className="relative">
-          //       <Bell size={24} color={iconColor} />
-          //       {/* Badge de notificação */}
-          //       <View className="absolute -top-1 -right-1 w-4 h-4 bg-primary rounded-full items-center justify-center">
-          //         <Text className="text-white text-xs font-bold">1</Text>
-          //       </View>
-          //     </Pressable>
-          //     <Pressable className="w-10 h-10 bg-primary rounded-full items-center justify-center">
-          //       <Text className="text-white text-sm font-bold">GV</Text>
-          //     </Pressable>
-          //   </View>
-          // ),
-          headerRight: undefined,
-        }}
-      />
-
-      <View className="flex-1 bg-background dark:bg-dark-background">
-        {/* Seletor de modo de visualização */}
-        <View className="flex-row items-center justify-center gap-2 p-4 border-b border-border dark:border-dark-border">
+    <View className="flex-1 bg-background dark:bg-dark-background">
+        {/* View Mode Selector - Simplified */}
+        <View className="flex-row items-center justify-center gap-1 px-4 pt-3 pb-2">
           <Pressable
             onPress={() => setViewMode('day')}
-            className={`flex-1 py-3 rounded-full ${
+            className={`flex-1 py-2.5 rounded-lg ${
               viewMode === 'day'
-                ? 'bg-primary'
-                : 'bg-gray-100 dark:bg-gray-800'
+                ? 'bg-primary/10'
+                : ''
             }`}
           >
             <Text
-              className={`text-center text-sm font-semibold ${
+              className={`text-center text-sm font-medium ${
                 viewMode === 'day'
-                  ? 'text-white'
-                  : 'text-foreground dark:text-dark-foreground'
+                  ? 'text-primary'
+                  : 'text-gray-600 dark:text-gray-400'
               }`}
             >
               Dia
@@ -221,17 +190,17 @@ export default function CalendarScreen() {
 
           <Pressable
             onPress={() => setViewMode('week')}
-            className={`flex-1 py-3 rounded-full ${
+            className={`flex-1 py-2.5 rounded-lg ${
               viewMode === 'week'
-                ? 'bg-primary'
-                : 'bg-gray-100 dark:bg-gray-800'
+                ? 'bg-primary/10'
+                : ''
             }`}
           >
             <Text
-              className={`text-center text-sm font-semibold ${
+              className={`text-center text-sm font-medium ${
                 viewMode === 'week'
-                  ? 'text-white'
-                  : 'text-foreground dark:text-dark-foreground'
+                  ? 'text-primary'
+                  : 'text-gray-600 dark:text-gray-400'
               }`}
             >
               Semana
@@ -240,17 +209,17 @@ export default function CalendarScreen() {
 
           <Pressable
             onPress={() => setViewMode('month')}
-            className={`flex-1 py-3 rounded-full ${
+            className={`flex-1 py-2.5 rounded-lg ${
               viewMode === 'month'
-                ? 'bg-primary'
-                : 'bg-gray-100 dark:bg-gray-800'
+                ? 'bg-primary/10'
+                : ''
             }`}
           >
             <Text
-              className={`text-center text-sm font-semibold ${
+              className={`text-center text-sm font-medium ${
                 viewMode === 'month'
-                  ? 'text-white'
-                  : 'text-foreground dark:text-dark-foreground'
+                  ? 'text-primary'
+                  : 'text-gray-600 dark:text-gray-400'
               }`}
             >
               Mês
@@ -258,26 +227,25 @@ export default function CalendarScreen() {
           </Pressable>
         </View>
 
-        {/* Navegação de data */}
-        <View className="flex-row items-center justify-between px-4 py-3 border-b border-border dark:border-dark-border">
+        {/* Date Navigation - Simplified */}
+        <View className="flex-row items-center justify-between px-4 py-3">
           <Pressable
             onPress={goToPrevious}
-            className="p-2 rounded-full border border-border dark:border-dark-border bg-white dark:bg-dark-card"
+            className="p-2 active:opacity-50"
           >
-            <ChevronLeft size={20} color={iconColor} />
+            <ChevronLeft size={24} color={iconColor} />
           </Pressable>
 
           {renderDateSelector()}
 
           <Pressable
             onPress={goToNext}
-            className="p-2 rounded-full border border-border dark:border-dark-border bg-white dark:bg-dark-card"
+            className="p-2 active:opacity-50"
           >
-            <ChevronRight size={20} color={iconColor} />
+            <ChevronRight size={24} color={iconColor} />
           </Pressable>
         </View>
 
-        {/* Conteúdo principal */}
         {isLoading ? (
           <View className="flex-1 items-center justify-center">
             <ActivityIndicator size="large" color="#0D7FFF" />
@@ -318,17 +286,15 @@ export default function CalendarScreen() {
           </>
         )}
 
-        {/* Botão flutuante de adicionar */}
         <Pressable
           onPress={() => router.push('/add-medication')}
-          className="absolute bottom-6 right-6 w-14 h-14 bg-primary rounded-full items-center justify-center shadow-lg"
+          className="absolute right-6 w-14 h-14 bg-primary rounded-full items-center justify-center shadow-lg"
+          style={{ bottom: Math.max(24, insets.bottom + 24) }}
         >
           <Plus size={28} color="white" />
         </Pressable>
-      </View>
 
-      {/* Modal do Calendário */}
-      {showDatePicker && Platform.OS === 'ios' && (
+        {showDatePicker && Platform.OS === 'ios' && (
         <Modal
           visible={true}
           transparent
@@ -340,7 +306,6 @@ export default function CalendarScreen() {
             onPress={handleCancelDate}
           >
             <Pressable className="bg-white dark:bg-dark-background rounded-t-3xl pb-6">
-              {/* Header */}
               <View className="flex-row items-center justify-between px-4 py-3 border-b border-border dark:border-dark-border">
                 <Pressable onPress={handleCancelDate}>
                   <Text className="text-base font-medium text-primary">Cancelar</Text>
@@ -353,7 +318,6 @@ export default function CalendarScreen() {
                 </Pressable>
               </View>
 
-              {/* Calendar */}
               <Calendar
                 current={format(selectedDate, 'yyyy-MM-dd')}
                 onDayPress={handleDateChange}
@@ -385,17 +349,16 @@ export default function CalendarScreen() {
             </Pressable>
           </Pressable>
         </Modal>
-      )}
+        )}
 
-      {/* DateTimePicker para Android */}
-      {showDatePicker && Platform.OS === 'android' && (
-        <DateTimePicker
-          value={selectedDate}
-          mode="date"
-          display="default"
-          onChange={handleAndroidDateChange}
-        />
-      )}
-    </>
-  );
-}
+        {showDatePicker && Platform.OS === 'android' && (
+          <DateTimePicker
+            value={selectedDate}
+            mode="date"
+            display="default"
+            onChange={handleAndroidDateChange}
+          />
+        )}
+      </View>
+    );
+  }
