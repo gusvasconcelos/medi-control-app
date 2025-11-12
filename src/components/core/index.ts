@@ -14,4 +14,5 @@ export { TimePicker } from './TimePicker';
 export { DatePicker } from './DatePicker';
 
 export { CustomHeader } from './CustomHeader';
+export { ProfileTabIcon } from './ProfileTabIcon';
 

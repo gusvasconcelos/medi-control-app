@@ -9,7 +9,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 type AuthMode = 'login' | 'register';
 
@@ -87,12 +87,16 @@ export default function AuthScreen() {
   const validationErrors = error?.code === 'VALIDATION' ? error.details : undefined;
 
   return (
-    <ScrollView
-      className="flex-1 bg-background dark:bg-dark-background"
-      contentContainerStyle={{ flexGrow: 1 }}
-      keyboardShouldPersistTaps="handled"
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      className="flex-1"
     >
-      <View className="flex-1 justify-center px-6 py-10 max-w-[600px] w-full self-center">
+      <ScrollView
+        className="flex-1 bg-background dark:bg-dark-background"
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View className="flex-1 justify-center px-6 py-10 max-w-[600px] w-full self-center">
         {/* Logo */}
         <View className="items-center mb-4">
           <LinearGradient
@@ -217,7 +221,10 @@ export default function AuthScreen() {
             </TouchableOpacity>
 
             {/* Forgot Password */}
-            <TouchableOpacity className="items-center mt-4">
+            <TouchableOpacity
+              className="items-center mt-4"
+              onPress={() => router.push('/(auth)/forgot-password')}
+            >
               <Text className="text-sm font-medium" style={{ color: Colors.primary.DEFAULT }}>
                 Esqueci minha senha
               </Text>
@@ -285,7 +292,8 @@ export default function AuthScreen() {
             </TouchableOpacity>
           </View>
         )}
-      </View>
-    </ScrollView>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

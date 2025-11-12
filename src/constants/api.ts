@@ -9,6 +9,8 @@ export const API_ROUTES = {
     logout: '/v1/auth/logout',
     refresh: '/v1/auth/refresh',
     me: '/v1/auth/me',
+    forgotPassword: '/v1/auth/forgot-password',
+    resetPassword: '/v1/auth/reset-password',
   },
   medications: {
     search: '/v1/medications/search',

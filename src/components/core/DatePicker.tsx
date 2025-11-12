@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { Pressable, Text, View, Platform, Modal, useColorScheme } from 'react-native';
+import { Modal, Platform, Pressable, Text, useColorScheme, View } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Calendar as CalendarIcon } from 'lucide-react-native';
-import { Calendar } from 'react-native-calendars';
-import { format, parse } from 'date-fns';
+import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 interface DatePickerProps {
@@ -28,33 +27,19 @@ export function DatePicker({
   maximumDate,
 }: DatePickerProps) {
   const [show, setShow] = useState(false);
-  const [tempDate, setTempDate] = useState<string>(
-    value ? format(value, 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd')
-  );
   const colorScheme = useColorScheme();
 
-  // Android DateTimePicker handler
-  const handleAndroidChange = (_event: any, selectedDate?: Date) => {
-    setShow(false);
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    if (Platform.OS === 'android') {
+      setShow(false);
+      if (event.type === 'dismissed' || event.type === 'neutralButtonPressed') {
+        return;
+      }
+    }
+
     if (selectedDate) {
       onChange(selectedDate);
     }
-  };
-
-  // iOS Calendar handler
-  const handleDayPress = (day: { dateString: string }) => {
-    setTempDate(day.dateString);
-  };
-
-  const handleConfirm = () => {
-    const date = parse(tempDate, 'yyyy-MM-dd', new Date());
-    onChange(date);
-    setShow(false);
-  };
-
-  const handleCancel = () => {
-    setShow(false);
-    setTempDate(value ? format(value, 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'));
   };
 
   const handleClear = () => {
@@ -64,10 +49,6 @@ export function DatePicker({
   const formattedDate = value
     ? format(value, "dd 'de' MMMM 'de' yyyy", { locale: ptBR })
     : placeholder;
-
-  // Format dates for Calendar component
-  const minDate = minimumDate ? format(minimumDate, 'yyyy-MM-dd') : undefined;
-  const maxDate = maximumDate ? format(maximumDate, 'yyyy-MM-dd') : undefined;
 
   return (
     <View className={containerClassName}>
@@ -79,10 +60,7 @@ export function DatePicker({
 
       <View className="flex-row gap-2">
         <Pressable
-          onPress={() => {
-            setTempDate(value || new Date());
-            setShow(true);
-          }}
+          onPress={() => setShow(true)}
           className="flex-1 flex-row items-center justify-between px-4 py-3.5 bg-white dark:bg-dark-card border border-border dark:border-dark-border rounded-xl"
           style={{ minHeight: 52 }}
         >
@@ -109,73 +87,60 @@ export function DatePicker({
         )}
       </View>
 
-      {show && Platform.OS === 'ios' && (
-        <Modal
-          visible={true}
-          transparent
-          animationType="slide"
-          onRequestClose={handleCancel}
-        >
-          <Pressable
-            className="flex-1 justify-end bg-black/50"
-            onPress={handleCancel}
-          >
-            <Pressable className="bg-white dark:bg-dark-background rounded-t-3xl pb-6">
-              {/* Header */}
-              <View className="flex-row items-center justify-between px-4 py-3 border-b border-border dark:border-dark-border">
-                <Pressable onPress={handleCancel}>
-                  <Text className="text-base font-medium text-primary">Cancelar</Text>
-                </Pressable>
-                <Text className="text-base font-semibold text-foreground dark:text-dark-foreground">
-                  {label || 'Selecionar Data'}
-                </Text>
-                <Pressable onPress={handleConfirm}>
-                  <Text className="text-base font-semibold text-primary">Confirmar</Text>
-                </Pressable>
-              </View>
-
-              {/* Calendar */}
-              <Calendar
-                current={tempDate}
-                onDayPress={handleDayPress}
-                markedDates={{
-                  [tempDate]: { selected: true, selectedColor: '#0D7FFF' },
-                }}
-                minDate={minDate}
-                maxDate={maxDate}
-                monthFormat={'MMMM yyyy'}
-                hideExtraDays={false}
-                firstDay={0}
-                enableSwipeMonths={true}
-                theme={{
-                  backgroundColor: colorScheme === 'dark' ? '#1F2937' : '#FFFFFF',
-                  calendarBackground: colorScheme === 'dark' ? '#1F2937' : '#FFFFFF',
-                  textSectionTitleColor: colorScheme === 'dark' ? '#9CA3AF' : '#6B7280',
-                  selectedDayBackgroundColor: '#0D7FFF',
-                  selectedDayTextColor: '#FFFFFF',
-                  todayTextColor: '#0D7FFF',
-                  dayTextColor: colorScheme === 'dark' ? '#E5E7EB' : '#1F2937',
-                  textDisabledColor: colorScheme === 'dark' ? '#4B5563' : '#D1D5DB',
-                  monthTextColor: colorScheme === 'dark' ? '#E5E7EB' : '#1F2937',
-                  textMonthFontWeight: '600',
-                  textDayFontSize: 16,
-                  textMonthFontSize: 18,
-                }}
-              />
-            </Pressable>
-          </Pressable>
-        </Modal>
-      )}
-
-      {show && Platform.OS === 'android' && (
+      {/* Android: DateTimePicker nativo direto */}
+      {Platform.OS === 'android' && show && (
         <DateTimePicker
           value={value || new Date()}
           mode="date"
           display="default"
-          onChange={handleAndroidChange}
+          onChange={handleDateChange}
           minimumDate={minimumDate}
           maximumDate={maximumDate}
         />
+      )}
+
+      {/* iOS: Modal com DateTimePicker spinner */}
+      {Platform.OS === 'ios' && show && (
+        <Modal transparent animationType="slide" visible={show}>
+          <Pressable
+            className="flex-1 justify-end bg-black/50"
+            onPress={() => setShow(false)}
+          >
+            <Pressable className="bg-white dark:bg-dark-card rounded-t-3xl">
+              <View className="flex-row items-center px-4 py-3 border-b border-border dark:border-dark-border">
+                <Pressable onPress={() => setShow(false)} className="flex-1">
+                  <Text className="text-base font-medium text-primary">Cancelar</Text>
+                </Pressable>
+                <View className="flex-1">
+                  <Text className="text-base font-semibold text-foreground dark:text-dark-foreground text-center">
+                    {label || 'Selecionar Data'}
+                  </Text>
+                </View>
+                <Pressable
+                  onPress={() => {
+                    setShow(false);
+                  }}
+                  className="flex-1"
+                >
+                  <Text className="text-base font-semibold text-primary text-right">OK</Text>
+                </Pressable>
+              </View>
+              <View className="items-center py-4">
+                <DateTimePicker
+                  value={value || new Date()}
+                  mode="date"
+                  display="spinner"
+                  onChange={handleDateChange}
+                  locale="pt-BR"
+                  textColor={colorScheme === 'dark' ? '#FFFFFF' : '#000000'}
+                  minimumDate={minimumDate}
+                  maximumDate={maximumDate}
+                  style={{ width: '100%' }}
+                />
+              </View>
+            </Pressable>
+          </Pressable>
+        </Modal>
       )}
     </View>
   );

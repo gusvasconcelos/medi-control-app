@@ -1,5 +1,6 @@
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { CustomHeader } from '@/src/components';
+import { ProfileTabIcon } from '@/src/components/core/ProfileTabIcon';
 import { Tabs } from 'expo-router';
 import { Calendar, PlusCircle } from 'lucide-react-native';
 import React from 'react';
@@ -48,6 +49,21 @@ export default function TabLayout() {
           title: 'Adicionar',
           tabBarIcon: ({ color, size }) => <PlusCircle size={size} color={color} />,
           href: null, // Hidden from tab bar - will be opened as modal
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Perfil',
+          tabBarIcon: ({ color, focused }) => (
+            <ProfileTabIcon color={color} focused={focused} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          href: null, // Hide settings from tabs
         }}
       />
     </Tabs>
