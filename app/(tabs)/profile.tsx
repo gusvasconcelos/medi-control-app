@@ -1,17 +1,17 @@
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useAuth } from '@/src/hooks/useAuth';
+import { LogOut, Mail, User as UserIcon } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  ScrollView,
-  Image,
-  Pressable,
   ActivityIndicator,
   Alert,
+  Image,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
 } from 'react-native';
-import { Edit2, Mail, User as UserIcon, LogOut } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useAuth } from '@/src/hooks/useAuth';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export default function ProfileScreen() {
   const { user, signOut } = useAuth();
@@ -63,25 +63,7 @@ export default function ProfileScreen() {
   }
 
   return (
-    <View
-      className="flex-1 bg-background dark:bg-dark-background"
-      style={{ paddingTop: insets.top }}
-    >
-      {/* Header */}
-      <View className="flex-row items-center justify-center px-4 py-3 border-b border-border dark:border-dark-border">
-        <Text className="text-lg font-semibold text-foreground dark:text-dark-foreground">
-          Perfil
-        </Text>
-        <Pressable
-          onPress={handleEditProfile}
-          className="p-2 -mr-2 rounded-full active:bg-gray-100 dark:active:bg-gray-800 absolute right-2"
-          accessibilityRole="button"
-          accessibilityLabel="Editar perfil"
-        >
-          <Edit2 size={20} color={iconColor} />
-        </Pressable>
-      </View>
-
+    <>
       <ScrollView
         className="flex-1"
         contentContainerClassName="pb-6"
@@ -155,16 +137,6 @@ export default function ProfileScreen() {
               Informações da Conta
             </Text>
 
-            {/* Account ID */}
-            <View className="mb-4">
-              <Text className="text-sm text-muted-foreground dark:text-dark-muted-foreground mb-1">
-                ID da Conta
-              </Text>
-              <Text className="text-base text-foreground dark:text-dark-foreground font-mono">
-                {user.id}
-              </Text>
-            </View>
-
             {/* Creation Date */}
             {user.createdAt && (
               <View>
@@ -209,6 +181,6 @@ export default function ProfileScreen() {
           </View>
         </View>
       </ScrollView>
-    </View>
+    </>
   );
 }
