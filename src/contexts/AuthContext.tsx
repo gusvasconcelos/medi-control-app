@@ -36,7 +36,6 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       setUser(profile);
       setError(null);
     } catch (err) {
-      console.error('Failed to refresh profile', err);
       setUser(null);
       throw err;
     }

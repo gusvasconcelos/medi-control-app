@@ -1,9 +1,13 @@
 import type {
+  ForgotPasswordRequest,
+  ForgotPasswordResponse,
   LoginRequest,
   LoginResponse,
   LogoutResponse,
   RefreshTokenResponse,
   RegisterRequest,
+  ResetPasswordRequest,
+  ResetPasswordResponse,
   User
 } from '@/src/@types';
 import { api } from '@/src/api/index';
@@ -37,6 +41,18 @@ export const refreshToken = async (refreshTokenValue: string) => {
 
 export const getCurrentUser = async () => {
   const { data } = await api.get<User>(API_ROUTES.auth.me);
+
+  return data;
+};
+
+export const forgotPassword = async (payload: ForgotPasswordRequest) => {
+  const { data } = await api.post<ForgotPasswordResponse>(API_ROUTES.auth.forgotPassword, payload);
+
+  return data;
+};
+
+export const resetPassword = async (payload: ResetPasswordRequest) => {
+  const { data } = await api.post<ResetPasswordResponse>(API_ROUTES.auth.resetPassword, payload);
 
   return data;
 };

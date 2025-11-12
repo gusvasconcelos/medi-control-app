@@ -5,7 +5,9 @@ import { X } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -65,11 +67,15 @@ export function ConfirmMedicationModal({
       onRequestClose={onCancel}
     >
       <View className="flex-1 bg-black/40">
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-end' }}
-          scrollEnabled={false}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          className="flex-1"
         >
-          <View className="bg-white dark:bg-dark-card rounded-t-3xl p-6">
+          <ScrollView
+            contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-end' }}
+            keyboardShouldPersistTaps="handled"
+          >
+            <View className="bg-white dark:bg-dark-card rounded-t-3xl p-6">
             {/* Header com Close */}
             <View className="flex-row items-center justify-between mb-6">
               <View className="flex-1">
@@ -137,6 +143,10 @@ export function ConfirmMedicationModal({
                 multiline
                 maxLength={1000}
                 numberOfLines={4}
+                style={{
+                  minHeight: 52,
+                  textAlignVertical: 'top',
+                }}
                 className="
                   px-4 py-3 bg-white dark:bg-dark-card border border-border dark:border-dark-border
                   rounded-xl text-base text-foreground dark:text-dark-foreground
@@ -162,8 +172,9 @@ export function ConfirmMedicationModal({
                 )}
               </Pressable>
             </View>
-          </View>
-        </ScrollView>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </View>
     </Modal>
   );

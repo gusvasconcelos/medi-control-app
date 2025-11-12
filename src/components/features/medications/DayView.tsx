@@ -1,16 +1,19 @@
 import type { Medication } from '@/src/@types';
-import { logMedicationTaken } from '@/src/api/services/user-medications';
+import { deleteUserMedication, logMedicationTaken } from '@/src/api/services/user-medications';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { useRouter } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Alert, ScrollView, Text, View } from 'react-native';
 import { ConfirmMedicationModal } from './ConfirmMedicationModal';
 import { MedicationCard } from './MedicationCard';
+import { MedicationDetailsModal } from './MedicationDetailsModal';
 
 interface DayViewProps {
   medications: Medication.UserMedication[];
   selectedDate: Date;
   onMedicationPress?: (medication: Medication.UserMedication, log?: Medication.MedicationLog) => void;
+  onRefresh?: () => void;
 }
 
 interface MedicationSchedule {
@@ -19,10 +22,13 @@ interface MedicationSchedule {
   log?: Medication.MedicationLog;
 }
 
-export function DayView({ medications, selectedDate, onMedicationPress }: DayViewProps) {
+export function DayView({ medications, selectedDate, onMedicationPress, onRefresh }: DayViewProps) {
+  const router = useRouter();
   const [scheduledMeds, setScheduledMeds] = useState<MedicationSchedule[]>([]);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [confirmModalVisible, setConfirmModalVisible] = useState(false);
+  const [detailsModalVisible, setDetailsModalVisible] = useState(false);
   const [selectedMedication, setSelectedMedication] = useState<Medication.UserMedication | null>(null);
+  const [selectedMedicationId, setSelectedMedicationId] = useState<number | null>(null);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -71,16 +77,64 @@ export function DayView({ medications, selectedDate, onMedicationPress }: DayVie
     return { total, taken };
   }, [scheduledMeds]);
 
-  const handleOpenModal = (medication: Medication.UserMedication, timeSlot: string) => {
+  const handleOpenConfirmModal = (medication: Medication.UserMedication, timeSlot: string) => {
     setSelectedMedication(medication);
     setSelectedTimeSlot(timeSlot);
-    setModalVisible(true);
+    setConfirmModalVisible(true);
   };
 
-  const handleCloseModal = () => {
-    setModalVisible(false);
+  const handleCloseConfirmModal = () => {
+    setConfirmModalVisible(false);
     setSelectedMedication(null);
     setSelectedTimeSlot('');
+  };
+
+  const handleOpenDetailsModal = (medicationId: number) => {
+    setSelectedMedicationId(medicationId);
+    setDetailsModalVisible(true);
+  };
+
+  const handleCloseDetailsModal = () => {
+    setDetailsModalVisible(false);
+    setSelectedMedicationId(null);
+  };
+
+  const handleMedicationAction = async (
+    action: Medication.MedicationDetailsAction,
+    medicationId: number,
+  ) => {
+    switch (action) {
+      case 'mark-taken':
+        const medication = medications.find((m) => m.id === medicationId);
+        if (medication && medication.timeSlots.length > 0) {
+          handleCloseDetailsModal();
+          handleOpenConfirmModal(medication, medication.timeSlots[0]);
+        }
+        break;
+
+      case 'edit':
+        router.push(`/edit-medication/${medicationId}` as any);
+        break;
+
+      case 'delete':
+        await handleDeleteMedication(medicationId);
+        break;
+
+      case 'view-history':
+        router.push(`/medication-history/${medicationId}` as any);
+        break;
+    }
+  };
+
+  const handleDeleteMedication = async (medicationId: number) => {
+    try {
+      await deleteUserMedication(medicationId);
+      Alert.alert('Sucesso', 'Medicamento excluído com sucesso!');
+      onRefresh?.();
+    } catch (error: any) {
+      console.error('Erro ao excluir medicamento:', error);
+      Alert.alert('Erro', error.message || 'Não foi possível excluir o medicamento');
+    }
   };
 
   const handleConfirmMedicationTaken = async (payload: {
@@ -122,7 +176,8 @@ export function DayView({ medications, selectedDate, onMedicationPress }: DayVie
       );
 
       Alert.alert('Sucesso', 'Medicamento marcado como tomado!');
-      handleCloseModal();
+      handleCloseConfirmModal();
+      onRefresh?.();
     } catch (error: any) {
       console.error('Erro ao marcar medicamento como tomado:', error);
       Alert.alert(
@@ -137,10 +192,6 @@ export function DayView({ medications, selectedDate, onMedicationPress }: DayVie
   return (
     <ScrollView className="flex-1 bg-background dark:bg-dark-background">
       <View className="p-4">
-        <Text className="text-xl font-semibold text-foreground dark:text-dark-foreground mb-6 text-center capitalize">
-          {formattedDate}
-        </Text>
-
         {scheduledMeds.length > 0 ? (
           <>
             {scheduledMeds.map((schedule, index) => (
@@ -149,9 +200,9 @@ export function DayView({ medications, selectedDate, onMedicationPress }: DayVie
                 medication={schedule.medication}
                 scheduledTime={schedule.scheduledTime}
                 log={schedule.log}
-                onPress={() => onMedicationPress?.(schedule.medication, schedule.log)}
+                onPress={() => handleOpenDetailsModal(schedule.medication.id)}
                 onMarkAsTaken={() =>
-                  handleOpenModal(schedule.medication, schedule.scheduledTime)
+                  handleOpenConfirmModal(schedule.medication, schedule.scheduledTime)
                 }
               />
             ))}
@@ -172,12 +223,20 @@ export function DayView({ medications, selectedDate, onMedicationPress }: DayVie
       </View>
 
       <ConfirmMedicationModal
-        visible={modalVisible}
+        visible={confirmModalVisible}
         medication={selectedMedication}
         scheduledTime={selectedTimeSlot}
         onConfirm={handleConfirmMedicationTaken}
-        onCancel={handleCloseModal}
+        onCancel={handleCloseConfirmModal}
         isLoading={isLoading}
+      />
+
+      <MedicationDetailsModal
+        visible={detailsModalVisible}
+        medicationId={selectedMedicationId}
+        onClose={handleCloseDetailsModal}
+        onAction={handleMedicationAction}
+        onMedicationDeleted={onRefresh}
       />
     </ScrollView>
   );

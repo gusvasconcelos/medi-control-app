@@ -164,4 +164,23 @@ export namespace Medication {
   export interface LogTakenResponse {
     data: MedicationLog;
   }
+
+  export interface GetUserMedicationResponse {
+    message: string;
+    data: UserMedication;
+  }
+
+  export type MedicationDetailsAction =
+    | 'mark-taken'
+    | 'edit'
+    | 'delete'
+    | 'view-history';
+
+  export interface MedicationDetailsModalProps {
+    visible: boolean;
+    medicationId: number | null;
+    onClose: () => void;
+    onAction: (action: MedicationDetailsAction, medicationId: number) => void;
+    onMedicationDeleted?: () => void;
+  }
 }

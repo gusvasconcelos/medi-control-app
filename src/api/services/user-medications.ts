@@ -12,7 +12,7 @@ export const getUserMedications = async (params?: Medication.GetUserMedicationsP
 };
 
 export const getUserMedication = async (id: number) => {
-  const { data } = await api.get<Medication.UserMedication>(
+  const { data } = await api.get<Medication.GetUserMedicationResponse>(
     API_ROUTES.userMedications.show(id)
   );
 
